@@ -37,6 +37,7 @@
 #include "pthread_prv_semantics.h"
 #include "cuda_prv_semantics.h"
 #include "opencl_prv_semantics.h"
+#include "openacc_prv_semantics.h"
 #include "openshmem_prv_semantics.h"
 #include "java_prv_semantics.h"
 
@@ -84,6 +85,7 @@ void Semantics_Initialize (int output_format)
 			Register_Range_Handlers (PRV_OpenCL_Event_Handlers);
 			Register_Event_Handlers (PRV_OPENSHMEM_Event_Handlers);
 			Register_Event_Handlers (PRV_Java_Event_Handlers);
+			Register_Event_Handlers (PRV_OpenACC_Event_Handlers);
 			break;
 	}
 }

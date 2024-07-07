@@ -36,6 +36,7 @@ PTHREAD_EXAMPLE_FILES=null
 CUDA_EXAMPLE_FILES=null
 OPENCL_EXAMPLE_FILES=null
 MPIOPENCL_EXAMPLE_FILES=null
+OPENACC_EXAMPLE_FILES=null
 OMPSS_EXAMPLE_FILES=null
 MPIOMPSS_EXAMPLE_FILES=null
 JAVA_EXAMPLE_FILES=null
@@ -216,6 +217,13 @@ MPIOPENCL_EXAMPLE_FILES+=\
  $(top_srcdir)/example/LINUX/MPI+OPENCL/trace.sh \
  $(top_srcdir)/example/LINUX/MPI+OPENCL/README \
  $(top_srcdir)/example/LINUX/MPI+OPENCL/mpi-vadd.c
+
+
+OPENACC_EXAMPLE_FILES+=\
+ $(top_srcdir)/example/LINUX/OPENACC/extrae.xml \
+ $(top_srcdir)/example/LINUX/OPENACC/Makefile \
+ $(top_srcdir)/example/LINUX/OPENACC/pi.c \
+ $(top_srcdir)/example/LINUX/OPENACC/run_ldpreload.sh 
 endif
 
 if OS_LINUX
@@ -303,6 +311,14 @@ OPENCL_EXAMPLE_FILES+=\
  $(top_srcdir)/example/LINUX/OPENCL/C++ \
  $(top_srcdir)/example/LINUX/OPENCL/C
 
+
+OPENACC_EXAMPLE_FILES+=\
+ $(top_srcdir)/example/LINUX/OPENACC/extrae.xml \
+ $(top_srcdir)/example/LINUX/OPENACC/Makefile \
+ $(top_srcdir)/example/LINUX/OPENACC/pi.c \
+ $(top_srcdir)/example/LINUX/OPENACC/run_ldpreload.sh 
+endif
+
 MPIOPENCL_EXAMPLE_FILES+=\
  $(top_srcdir)/example/LINUX/MPI+OPENCL/extrae.xml \
  $(top_srcdir)/example/LINUX/MPI+OPENCL/Makefile \
@@ -347,7 +363,7 @@ FORK_EXAMPLE_FILES+=\
  $(top_srcdir)/example/LINUX/FORK/README \
  $(top_srcdir)/example/LINUX/FORK/run_dyninst.sh
 endif
-endif
+
 
 
 install-data-hook:
@@ -389,6 +405,19 @@ if WANT_OPENCL
 else
 	$(top_srcdir)/substitute $(SED) "@sub_OPENCL_HOME@" "" $(DESTDIR)$(datadir)/example/Makefile.inc
 	$(top_srcdir)/substitute $(SED) "@sub_OPENCL_LDFLAGS@" "" $(DESTDIR)$(datadir)/example/Makefile.inc
+endif
+	$(top_srcdir)/substitute $(SED) "@sub_POSIX_CLOCK@" "${POSIX_CLOCK_LIB}" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_CC@" "`which ${CC}`" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_CXX@" "`which ${CXX}`" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_FC@" "`which ${FC}`" $(DESTDIR)$(datadir)/example/Makefile.inc
+if WANT_OPENACC
+	$(top_srcdir)/substitute $(SED) "@sub_OPENACC_HOME@" "${OPENACC_HOME}" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_OPENACC_LDFLAGS@" "${OPENACC_LDFLAGS}" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_PGCC@" "`which ${PGCC}`" $(DESTDIR)$(datadir)/example/Makefile.inc
+else
+	$(top_srcdir)/substitute $(SED) "@sub_OPENACC_HOME@" "" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_OPENACC_LDFLAGS@" "" $(DESTDIR)$(datadir)/example/Makefile.inc
+	$(top_srcdir)/substitute $(SED) "@sub_PGCC@" "" $(DESTDIR)$(datadir)/example/Makefile.inc
 endif
 	$(top_srcdir)/substitute $(SED) "@sub_POSIX_CLOCK@" "${POSIX_CLOCK_LIB}" $(DESTDIR)$(datadir)/example/Makefile.inc
 	$(top_srcdir)/substitute $(SED) "@sub_CC@" "`which ${CC}`" $(DESTDIR)$(datadir)/example/Makefile.inc
@@ -482,6 +511,12 @@ if WANT_OPENCL
 	cp -fr $(OPENCL_EXAMPLE_FILES) $(DESTDIR)$(datadir)/example/OPENCL
 	cd $(DESTDIR)$(datadir)/example/OPENCL ; cp ../Makefile.inc .
 endif
+if WANT_OPENACC
+	$(MKDIR_P) $(DESTDIR)$(datadir)/example/OPENACC
+	cp -fr $(OPENACC_EXAMPLE_FILES) $(DESTDIR)$(datadir)/example/OPENACC
+	cd $(DESTDIR)$(datadir)/example/OPENACC ; cp ../Makefile.inc .
+endif
+
 if WANT_NANOS
 	$(MKDIR_P) $(DESTDIR)$(datadir)/example/OMPSS
 	cp -fr $(OMPSS_EXAMPLE_FILES) $(DESTDIR)$(datadir)/example/OMPSS
@@ -502,7 +537,6 @@ endif
 # SVN installations may have some subversion control files
 	find $(DESTDIR)$(datadir)/example -name .svn -delete
 	find $(DESTDIR)$(datadir)/example -name null -delete
-
 uninstall-local:
 	rm -r $(DESTDIR)$(datadir)/example/SEQ \
 	      $(DESTDIR)$(datadir)/example/FORK \
@@ -536,6 +570,9 @@ if WANT_CUDAorCUPTI
 endif
 if WANT_OPENCL
 	rm -r $(DESTDIR)$(datadir)/example/OPENCL
+endif
+if WANT_OPENACC
+	rm -r $(DESTDIR)$(datadir)/example/OPENACC
 endif
 if WANT_NANOS
 	rm -r $(DESTDIR)$(datadir)/example/OMPSS

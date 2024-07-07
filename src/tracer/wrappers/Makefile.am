@@ -20,6 +20,10 @@ if WANT_OPENCL
 SUBDIRS += OPENCL
 endif
 
+if WANT_OPENACC
+SUBDIRS += OPENACC
+endif
+
 if WANT_OPENSHMEM
 SUBDIRS += openshmem
 endif

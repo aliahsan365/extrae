@@ -36,6 +36,10 @@ if WANT_OPENCL
   lib_LTLIBRARIES += libocltrace.la
 endif
 
+if WANT_OPENACC
+  lib_LTLIBRARIES += liboacctrace.la
+endif
+
 if HAVE_MPI
   lib_LTLIBRARIES += libmpitrace.la libmpitracef.la
 if SINGLE_MPI_LIBRARY
@@ -63,6 +67,12 @@ if WANT_OPENCL
   lib_LTLIBRARIES += liboclmpitrace.la liboclmpitracef.la
 if SINGLE_MPI_LIBRARY
   lib_LTLIBRARIES += liboclmpitracecf.la
+endif
+endif
+if WANT_OPENACC
+  lib_LTLIBRARIES += liboaccmpitrace.la liboaccmpitracef.la
+if SINGLE_MPI_LIBRARY
+  lib_LTLIBRARIES += liboaccmpitracecf.la
 endif
 endif
 if WANT_NANOS
@@ -128,6 +138,12 @@ if SINGLE_MPI_LIBRARY
   lib_LTLIBRARIES += lib_dyn_cudampitracecf.la
 endif
 endif
+if WANT_OPENACC
+  lib_LTLIBRARIES += lib_dyn_oaccmpitracec.la lib_dyn_oaccmpitracef.la
+if SINGLE_MPI_LIBRARY
+  lib_LTLIBRARIES += lib_dyn_oaccmpitracecf.la
+endif
+endif
 if WANT_OPENCL
   lib_LTLIBRARIES += lib_dyn_oclmpitracec.la lib_dyn_oclmpitracef.la
 if SINGLE_MPI_LIBRARY
@@ -185,6 +201,16 @@ liboclmpitracef_la_SOURCES = $(liboclmpitrace_la_SOURCES) extrae_mpif.h
 if SINGLE_MPI_LIBRARY
   liboclmpitracecf_la_SOURCES = $(liboclmpitrace_la_SOURCES) extrae_mpif.h
 endif
+
+# OpenACC trace
+liboacctrace_la_SOURCES = $(core_SRCS) $(WRAPPERS_OACC)
+liboaccmpitrace_la_SOURCES = $(core_SRCS) $(WRAPPERS_OACC)
+liboaccmpitracef_la_SOURCES = $(liboaccmpitrace_la_SOURCES) extrae_mpif.h
+
+if SINGLE_MPI_LIBRARY
+  liboaccmpitracecf_la_SOURCES = $(liboaccmpitrace_la_SOURCES) extrae_mpif.h
+endif
+
 
 # CUDA trace & MPItrace & OpenMP
 libcudaompitrace_la_SOURCES = $(core_SRCS)
@@ -259,6 +285,11 @@ lib_dyn_cudampitracecf_la_SOURCES = $(libcudampitracecf_la_SOURCES)
 lib_dyn_oclmpitracec_la_SOURCES = $(liboclmpitrace_la_SOURCES)
 lib_dyn_oclmpitracef_la_SOURCES = $(liboclmpitracef_la_SOURCES)
 lib_dyn_oclmpitracecf_la_SOURCES = $(liboclmpitracecf_la_SOURCES)
+
+lib_dyn_oaccmpitracec_la_SOURCES = $(liboaccmpitrace_la_SOURCES)
+lib_dyn_oaccmpitracef_la_SOURCES = $(liboaccmpitracef_la_SOURCES)
+lib_dyn_oaccmpitracecf_la_SOURCES = $(liboaccmpitracecf_la_SOURCES)
+
 
 core_MODULES = \
  $(COMMON_LIB)/libcommon.la \
@@ -365,6 +396,7 @@ endif
 ADDITIONAL_PTHREAD_LIBS = $(WRAPPERS_LIB)/pthread/libwrap_pthread.la $(PTHREAD_LIBS)
 ADDITIONAL_OPENMP_LIBS = $(WRAPPERS_LIB)/OMP/libwrap_openmp.la
 ADDITIONAL_OPENCL_LIBS = $(WRAPPERS_LIB)/OPENCL/libwrap_opencl.la
+ADDITIONAL_OPENACC_LIBS = $(WRAPPERS_LIB)/OPENACC/libwrap_openacc.la
 ADDITIONAL_CUDA_LIBS = $(WRAPPERS_LIB)/CUDA/libwrap_cuda.la
 ADDITIONAL_OPENSHMEM_LIBS = $(WRAPPERS_LIB)/openshmem/libwrap_openshmem.la
 
@@ -383,6 +415,15 @@ liboclmpitracef_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LI
 if SINGLE_MPI_LIBRARY
   liboclmpitracecf_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_CF) $(ADDITIONAL_OPENCL_LIBS) $(PARALLEL_MERGE_LIB)
 endif
+
+liboacctrace_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_OPENACC_LIBS) $(SEQUENTIAL_MERGE_LIB)
+liboaccmpitrace_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_C) $(ADDITIONAL_OPENACC_LIBS) $(PARALLEL_MERGE_LIB)
+liboaccmpitracef_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_F) $(ADDITIONAL_OPENACC_LIBS) $(PARALLEL_MERGE_LIB)
+
+if SINGLE_MPI_LIBRARY
+  liboaccmpitracecf_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_CF) $(ADDITIONAL_OPENACC_LIBS) $(PARALLEL_MERGE_LIB)
+endif
+
 
 libcudaompitrace_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_C) $(ADDITIONAL_OPENMP_LIBS) $(ADDITIONAL_CUDA_LIBS) $(PARALLEL_MERGE_LIB)
 libcudaompitracef_la_LIBADD = $(core_MODULES) $(INTERFACE_API) $(ADDITIONAL_MPI_LIBS_F) $(ADDITIONAL_OPENMP_LIBS) $(ADDITIONAL_CUDA_LIBS) $(PARALLEL_MERGE_LIB)
@@ -452,6 +493,7 @@ core_INCLUDES = \
  -I$(WRAPPERS_INC)/pthread \
  -I$(WRAPPERS_INC)/CUDA \
  -I$(WRAPPERS_INC)/OPENCL \
+ -I$(WRAPPERS_INC)/OPENACC \
  -I$(WRAPPERS_INC)/fork \
  -I$(WRAPPERS_INC)/MALLOC \
  -I$(WRAPPERS_INC)/IO \
@@ -528,6 +570,14 @@ if SINGLE_MPI_LIBRARY
   liboclmpitracecf_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DOPENCL_SUPPORT $(WRAPPERS_OCL_CFLAGS)
 endif
 
+liboacctrace_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) $(SEQUENTIAL_CFLAGS_MERGE_LIB) -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+liboaccmpitrace_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+liboaccmpitracef_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+
+if SINGLE_MPI_LIBRARY
+  liboaccmpitracecf_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+endif
+
 libcudaompitrace_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DCUDA_SUPPORT $(WRAPPERS_CUDA_CFLAGS) -DOMP_SUPPORT
 libcudaompitracef_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DCUDA_SUPPORT $(WRAPPERS_CUDA_CFLAGS) -DOMP_SUPPORT
 
@@ -591,7 +641,9 @@ lib_dyn_cudampitracecf_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT
 lib_dyn_oclmpitracec_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENCL_SUPPORT $(WRAPPERS_OCL_CFLAGS)
 lib_dyn_oclmpitracef_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENCL_SUPPORT $(WRAPPERS_OCL_CFLAGS)
 lib_dyn_oclmpitracecf_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENCL_SUPPORT $(WRAPPERS_OCL_CFLAGS)
-
+lib_dyn_oaccmpitracec_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+lib_dyn_oaccmpitracef_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
+lib_dyn_oaccmpitracecf_la_CFLAGS = $(core_INCLUDES) $(core_CFLAGS) -DMPI_SUPPORT $(MPI_CFLAGS) $(PARALLEL_CFLAGS_MERGE_LIB) -DDYNINST_MODULE -DOPENACC_SUPPORT $(WRAPPERS_OACC_CFLAGS)
 #
 # Online support is only activated for the MPI libraries
 # 
@@ -679,6 +731,16 @@ liboclmpitracef_la_LDFLAGS = $(libmpitracef_la_LDFLAGS)
 if SINGLE_MPI_LIBRARY
   liboclmpitracecf_la_LDFLAGS = $(libmpitracecf_la_LDFLAGS)
 endif
+
+liboacctrace_la_LDFLAGS = $(COMMON_LINKER_FLAGS)
+liboaccmpitrace_la_LDFLAGS = $(libmpitrace_la_LDFLAGS)
+liboaccmpitracef_la_LDFLAGS = $(libmpitracef_la_LDFLAGS)
+
+if SINGLE_MPI_LIBRARY
+  liboaccmpitracecf_la_LDFLAGS = $(libmpitracecf_la_LDFLAGS)
+endif
+
+
 
 libomptrace_la_LDFLAGS = $(COMMON_LINKER_FLAGS)
 libompitrace_la_LDFLAGS = $(libmpitrace_la_LDFLAGS)

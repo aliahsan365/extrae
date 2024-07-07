@@ -310,6 +310,7 @@ AX_CHECK_OPENMP
 AX_CUDA
 AX_CUPTI
 AX_OPENCL
+AX_OPENACC
 AX_PTHREAD
 
 AC_ARG_ENABLE(smpss,
@@ -633,6 +634,7 @@ AC_CONFIG_FILES([
   src/tracer/wrappers/OMP/intel-kmpc-11-intermediate/Makefile \
   src/tracer/wrappers/CUDA/Makefile \
   src/tracer/wrappers/OPENCL/Makefile \
+  src/tracer/wrappers/OPENACC/Makefile \
   src/tracer/wrappers/pthread/Makefile \
   src/tracer/wrappers/openshmem/Makefile \
   src/tracer/wrappers/MALLOC/Makefile \
@@ -669,6 +671,7 @@ AC_CONFIG_FILES([\
   tests/functional/tracer/MPI/Makefile \
   tests/functional/tracer/JAVA/Makefile \
   tests/functional/tracer/OPENCL/Makefile \
+  tests/functional/tracer/OPENACC/Makefile \
   tests/functional/tracer/CUDA/Makefile \
   tests/functional/merger/Makefile \
   tests/functional/merger/dump-events/Makefile \
@@ -767,6 +770,7 @@ AC_CONFIG_LINKS([tests/functional/helper_functions.bash:tests/functional/helper_
 		[docs/source/xml/sampling.xml:docs/source/xml/sampling.xml] \
 		[docs/source/xml/cuda.xml:docs/source/xml/cuda.xml] \
 		[docs/source/xml/opencl.xml:docs/source/xml/opencl.xml] \
+    [docs/source/xml/openacc.xml:docs/source/xml/openacc.xml] \
 		[docs/source/xml/input-output.xml:docs/source/xml/input-output.xml] \
 		[docs/source/xml/dynamic-memory.xml:docs/source/xml/dynamic-memory.xml] \
 		[docs/source/xml/intel-pebs.xml:docs/source/xml/intel-pebs.xml] \

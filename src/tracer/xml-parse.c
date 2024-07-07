@@ -81,6 +81,9 @@ static char UNUSED rcsid[] = "$Id$";
 #if defined(OPENCL_SUPPORT)
 # include "opencl_probe.h"
 #endif
+#if defined(OPENACC_SUPPORT)
+# include "openacc_probe.h"
+#endif
 #if defined(CUDA_SUPPORT)
 # include "cuda_probe.h"
 #endif
@@ -1829,6 +1832,26 @@ short int Parse_XML_File (int rank, int world_size, const char *filename)
 #if defined(OPENCL_SUPPORT)
 						else
 							Extrae_set_trace_OpenCL (FALSE);
+#endif
+
+						XML_FREE(enabled);
+					}
+					/* OpenACC related configuration */
+					else if (!xmlStrcasecmp (current_tag->name, TRACE_OPENACC))
+					{
+						xmlChar *enabled = xmlGetProp_env (rank, current_tag, TRACE_ENABLED);
+
+						if (enabled != NULL && !xmlStrcasecmp (enabled, xmlYES))
+						{
+#if defined(OPENACC_SUPPORT)
+							Extrae_set_trace_OpenACC (TRUE);
+#else
+							mfprintf (stdout, PACKAGE_NAME": Warning! <%s> tag will be ignored. This library does not support OpenACC.\n", TRACE_OPENACC);
+#endif
+						}
+#if defined(OPENACC_SUPPORT)
+						else
+							Extrae_set_trace_OpenACC (FALSE);
 #endif
 
 						XML_FREE(enabled);

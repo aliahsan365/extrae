@@ -648,6 +648,46 @@ enum {
 #define OPENCL_CLFINISH_THID_EV                       64300000
 
 
+
+
+
+/******************************************************************************
+*   Start of user events to trace OpenACC parallel execution.
+******************************************************************************/
+#define OPENACC_END_VAL                             0
+
+enum OPENACC_LAUNCH {            
+  OPENACC_ENQUEUE_LAUNCH_VAL=1,  //acc_ev_enqueue_launch_start
+  OPENACC_DEVICE_EXECUTE_VAL,    //evento custom para indicar la ejecucion en la GPU
+};
+
+
+enum OPENACC_DATA {
+  OPENACC_CREATE_VAL=3,          //acc_ev_create                  
+  OPENACC_DELETE_VAL,            //acc_ev_delete                 
+  OPENACC_ALLOC_VAL,             //acc_ev_alloc                 
+  OPENACC_FREE_VAL,              //acc_ev_free                 
+  OPENACC_ENQUEUE_UPLOAD_VAL,    //acc_ev_enqueue_upload_start           
+  OPENACC_ENQUEUE_DOWNLOAD_VAL   //acc_ev_enqueue_download_start          
+};
+
+enum OPENACC_OTHERS {
+  OPENACC_DEVICE_INIT_VAL=9,     //acc_ev_device_init_start           
+  OPENACC_DEVICE_SHUTDOWN_VAL,   //acc_ev_device_shutdown_start          
+  OPENACC_RUNTIME_SHUTDOWN_VAL,  //acc_ev_runtime_shutdown                 
+  OPENACC_COMPUTE_CONSTRUCT_VAL, //acc_ev_compute_construct_start           
+  OPENACC_ENTER_DATA_VAL,        //acc_ev_enter_data_start            
+  OPENACC_EXIT_DATA_VAL,         //acc_ev_exit_data_start            
+  OPENACC_UPDATE_VAL,            //acc_ev_update_start           
+  OPENACC_WAIT_VAL               //acc_ev_wait_start              
+};
+
+#define OPENACC_LAUNCH_EV                           65000001
+#define OPENACC_DATA_EV                             65000002
+#define OPENACC_OTHERS_EV                           65000003
+
+
+
 #define CALLER_EV                70000000
 #define CALLER_LINE_EV           80000000
 
@@ -973,7 +1013,8 @@ typedef enum
 	CUDA_TYPE,
 	OPENCL_TYPE,
 	OPENSHMEM_TYPE,
-	JAVA_TYPE
+	JAVA_TYPE,
+  OPENACC_TYPE
 } EventType_t;
 
 

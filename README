@@ -43,6 +43,8 @@ Please, make sure to install the development versions of all packages (-dev,
 	Execute CUDA-based applications.
 * **OpenCL**  
 	Execute OpenCL-based applications.
+* **OpenACC**  
+	Execute OpenACC-based applications.
 
 
 Installation instructions

@@ -73,6 +73,7 @@
 #define TRACE_MPI                       ((xmlChar*) "mpi")
 #define TRACE_SHMEM                     ((xmlChar*) "shmem")
 #define TRACE_OPENCL                    ((xmlChar*) "opencl")
+#define TRACE_OPENACC                   ((xmlChar*) "openacc")
 #define TRACE_CUDA                      ((xmlChar*) "cuda")
 #define TRACE_PTHREAD_LOCKS             ((xmlChar*) "locks")
 #define TRACE_PTHREAD                   ((xmlChar*) "pthread")

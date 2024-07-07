@@ -61,6 +61,7 @@
 #include "omp_prv_events.h"
 #include "java_prv_events.h"
 #include "cuda_prv_events.h"
+#include "openacc_prv_events.h"
 #include "opencl_prv_events.h"
 #include "pthread_prv_events.h"
 #include "misc_prv_events.h"
@@ -1150,6 +1151,7 @@ int Labels_GeneratePCFfile (char *name, long long options)
 	WriteEnabled_pthread_Operations (fd);
 	MISCEvent_WriteEnabledOperations (fd, options);
 	CUDAEvent_WriteEnabledOperations (fd);
+	OPENACCEvent_WriteEnabledOperations (fd);
 	JavaEvent_WriteEnabledOperations (fd);
 
 #if USE_HARDWARE_COUNTERS

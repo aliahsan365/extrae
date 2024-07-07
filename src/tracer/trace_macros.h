@@ -149,6 +149,26 @@
 #define TRACE_MISCEVENTANDCOUNTERS(evttime,evttype,evtvalue,evtparam) TRACE_MISCEVENT(evttime,evttype,evtvalue,evtparam)
 #endif
 
+
+
+
+
+#define OPENACC_TRACE(devid,evttime,evttype,evtvalue,evtparam) \
+{                                                                 \
+	event_t evt;                                                    \
+	if (tracejant && TracingBitmap[TASKID])                         \
+	{                                                               \
+		evt.time = evttime;                                           \
+		evt.event = evttype;                                          \
+		evt.value = evtvalue;                                         \
+		evt.param.misc_param.param = (unsigned long long) (evtparam); \
+		BUFFER_INSERT(devid + 1 , TRACING_BUFFER(devid + 1), evt);     \
+	}                                                               \
+}
+
+
+
+
 #if defined(DCARRERA_HADOOP)
 # define TRACE_N_MISCEVENT(evttime,count,evttypes,evtvalues,evtparams) \
 { \

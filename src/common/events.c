@@ -268,6 +268,70 @@ unsigned IsOpenCL (unsigned EvType)
   return FALSE;
 }
 
+
+/******************************************************************************
+ ***  IsOpenACC v1
+ ******************************************************************************/
+#define OPENACC_EVENTS 3
+static unsigned openacc_events[] = {
+	OPENACC_LAUNCH_EV,                           
+	OPENACC_DATA_EV,                             
+	OPENACC_OTHERS_EV,                                                              
+};
+
+unsigned IsOpenACC (unsigned EvType)
+{
+  unsigned evt;
+
+  for (evt = 0; evt < OPENACC_EVENTS; evt++)
+    if (openacc_events[evt] == EvType)
+      return TRUE;
+  return FALSE;
+}
+
+
+/******************************************************************************
+ ***  IsOpenACC v1
+ ******************************************************************************/
+
+
+
+
+/******************************************************************************
+ ***  IsOpenACC v2
+ ******************************************************************************/
+/*
+#define OPENACC_EVENTS 3
+static unsigned openacc_events[] = {
+	OPENACC_LAUNCH_EV,
+	OPENACC_DATA_EV,
+	OPENACC_OTHERS_EV,               
+};
+
+unsigned IsOpenACC (unsigned EvType)
+{
+  unsigned evt;
+
+  for (evt = 0; evt < OPENACC_EVENTS; evt++)
+    if (openacc_events[evt] == EvType)
+      return TRUE;
+  return FALSE;
+}
+*/
+
+/******************************************************************************
+ ***  IsOpenACC v2
+ ******************************************************************************/
+
+
+
+
+
+
+
+
+
+
 /******************************************************************************
  ***  IsOPENSHMEM
  ******************************************************************************/
@@ -399,6 +463,11 @@ EventType_t getEventType (unsigned EvType, unsigned *Type)
 	else if (IsOpenCL(EvType))
 	{
 		*Type = OPENCL_TYPE;
+		return TRUE;
+	}
+	else if (IsOpenACC(EvType))
+	{
+		*Type = OPENACC_TYPE;
 		return TRUE;
 	}
 	else if (IsOPENSHMEM(EvType))

@@ -209,6 +209,11 @@ enabled or disabled. To enable them use ``--enable-X`` or ``--with-X=``
   Specify the location for the OpenCL package, including library and include
   directories.
 
+* .. option:: --with-openacc=<PATH>
+
+  Specify the location for the OpenACCC package and include directories.
+
+
 * .. option:: --with-openshmem=<PATH>
 
   Specify the location of the OpenSHMEM installation to be used for the
